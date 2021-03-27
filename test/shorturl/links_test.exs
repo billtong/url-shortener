@@ -9,6 +9,8 @@ defmodule Shorturl.LinksTest do
     @valid_attrs %{id: "jfi6kf9h", url: "https://domain.com", visits: 0}
     @update_attrs %{visits: 1}
     @invalid_attrs %{url: nil}
+    @duplicated_id_attrs %{id: "jfi6kf9h", url: "https://lofy.io", visits: 0}
+    @duplicated_url_attrs %{id: "12345678", url: "https://domain.com", visits: 0}
 
     def link_fixture(attrs \\ %{}) do
       {:ok, link} =
@@ -25,9 +27,37 @@ defmodule Shorturl.LinksTest do
       assert link.visits == 0
     end
 
+    test "create_link/1 with invalid duplicated url" do
+      {:ok, %Link{}} = Links.create_link(@valid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Links.create_link(@duplicated_url_attrs)
+    end
+
+    test "create_link/1 with invalid duplicated id" do
+      {:ok, %Link{}} = Links.create_link(@valid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Links.create_link(@duplicated_id_attrs)
+    end
+
     test "get_link!/1 returns the link with given id" do
       link = link_fixture()
       assert Links.get_link!(link.id) == link
+    end
+
+    test "get_link/1 return nil" do
+      assert Links.get_link("??") == nil
+    end
+
+    test "get_link/1 return link struct" do
+      link = link_fixture()
+      assert Links.get_link(link.id) == link
+    end
+
+    test "get_link_by_url return nil" do
+      assert Links.get_link_by_url("??") == nil
+    end
+
+    test "get_link_by_url return link struct" do
+      link = link_fixture()
+      assert Links.get_link_by_url(link.url) == link
     end
 
     test "create_link/1 with invalid data returns error changeset" do

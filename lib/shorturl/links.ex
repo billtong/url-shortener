@@ -23,6 +23,20 @@ defmodule Shorturl.Links do
   """
   def get_link!(id), do: Repo.get!(Link, id)
 
+
+  @doc """
+  select * by id
+  return nil or %Link{}
+  """
+  def get_link(id), do: Repo.get(Link, id)
+
+  @doc """
+  select * by url
+  return nil or %Link{}
+  """
+  def get_link_by_url(url) , do: Repo.get_by(Link, url: url)
+
+
   @doc """
   Creates a link.
 

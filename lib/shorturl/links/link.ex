@@ -16,6 +16,8 @@ defmodule Shorturl.Links.Link do
     |> cast(attrs, [:id, :url, :visits])
     |> validate_required([:id, :url])
     |> validate_url(:url)
+    |> unique_constraint(:id, name: :links_pkey) # id unique index check
+    |> unique_constraint(:url)  # url unique index check
   end
 
   def validate_url(changeset, field, options \\ %{}) do
