@@ -3,7 +3,7 @@ defmodule ShorturlWeb.LinkControllerTest do
 
   alias Shorturl.Links
 
-  @create_attrs %{id: "dkljd34g", url: "https://domain.com"}
+  @create_attrs %{url: "https://domain.com"}
   @invalid_attrs %{url: nil, visits: nil}
 
   def fixture(:link) do
@@ -21,12 +21,19 @@ defmodule ShorturlWeb.LinkControllerTest do
   describe "create link" do
     test "redirects to show when data is valid", %{conn: conn} do
       conn = post(conn, Routes.link_path(conn, :create), link: @create_attrs)
+      %{id: id} = redirected_params(conn)
+      assert redirected_to(conn) == Routes.link_path(conn, :show, id)
 
-      assert %{id: "dkljd34g"} = redirected_params(conn)
-      assert redirected_to(conn) == Routes.link_path(conn, :show, "dkljd34g")
-
-      conn = get(conn, Routes.link_path(conn, :show, "dkljd34g"))
+      conn = get(conn, Routes.link_path(conn, :show, id))
       assert html_response(conn, 200) =~ "Link information"
+    end
+
+    test "redirect to the same shortened url by passing the same url", %{conn: conn} do
+      conn = post(conn, Routes.link_path(conn, :create), link: @create_attrs)
+      %{id: id_1} = redirected_params(conn)
+      conn = post(conn, Routes.link_path(conn, :create), link: @create_attrs)
+      %{id: id_2} = redirected_params(conn)
+      assert id_1 =~ id_2
     end
 
     test "renders errors when data is invalid", %{conn: conn} do

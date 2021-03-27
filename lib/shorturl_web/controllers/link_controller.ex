@@ -49,19 +49,25 @@ defmodule ShorturlWeb.LinkController do
   end
 
   defp create_link(link_params) do
-    key = random_string(8)
-    params = Map.put(link_params, "id", key)
+    link_params
+    |> Map.put("id", random_string(8))
+    |> Links.create_link()
+    |> case do
+      {:ok, link} -> {:ok, link}
+      {:error, %Ecto.Changeset{} = changeset} -> handle_create_link_error(link_params, changeset)
+    end
+  end
 
-    try do
-      case Links.create_link(params) do
-        {:ok, link} ->
-          {:ok, link}
-
-        {:error, %Ecto.Changeset{} = changeset} ->
-          {:error, changeset}
-      end
-    rescue
-      Ecto.ConstraintError ->
+  defp handle_create_link_error(%{"url" => url}=params, changeset) do
+    cond do
+      Links.is_url_invalid?(changeset) -> {:error, changeset}
+      Links.is_taken?(changeset, :url) ->
+        case Links.get_link_by_url(url) do
+          %Link{} = link -> {:ok, link}
+          nil -> #  the data was deleted right after last create_link
+            create_link(params)
+        end
+      Links.is_taken?(changeset, :id) ->
         create_link(params)
     end
   end

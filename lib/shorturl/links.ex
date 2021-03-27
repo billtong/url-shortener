@@ -6,6 +6,7 @@ defmodule Shorturl.Links do
   import Ecto.Query, warn: false
   alias Shorturl.Repo
   alias Shorturl.Links.Link
+  alias Ecto.Changeset
 
   @doc """
   Gets a single link.
@@ -88,5 +89,28 @@ defmodule Shorturl.Links do
   """
   def change_link(%Link{} = link, attrs \\ %{}) do
     Link.changeset(link, attrs)
+  end
+
+  @doc """
+  input: changeset, the atom of column name
+  output: is the column has been taken or not according to the changeset
+  """
+  def is_taken?(%Changeset{} = changeset, name) do
+    case changeset.errors[name] do
+      {"has already been taken", _opt} -> true
+      _ -> false
+    end
+  end
+
+  @doc """
+  input, changeset
+  output, is the url invalid or not according to the changeset
+  """
+  def is_url_invalid?(%Changeset{} = changeset) do
+    case changeset.errors[:url] do
+      {"can't be blank", _opt} -> true
+      {"Please enter valid url!", _opt} -> true
+      _ -> false
+    end
   end
 end

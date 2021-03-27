@@ -9,6 +9,8 @@ defmodule Shorturl.LinksTest do
     @valid_attrs %{id: "jfi6kf9h", url: "https://domain.com", visits: 0}
     @update_attrs %{visits: 1}
     @invalid_attrs %{url: nil}
+    @empty_url_attrs %{id: "jfi6kf9h", url: nil, visits: 0}
+    @invalid_url_attrs %{id: "jfi6kf9h", url: "aklsdasdf", visits: 0}
     @duplicated_id_attrs %{id: "jfi6kf9h", url: "https://lofy.io", visits: 0}
     @duplicated_url_attrs %{id: "12345678", url: "https://domain.com", visits: 0}
 
@@ -80,5 +82,28 @@ defmodule Shorturl.LinksTest do
       link = link_fixture()
       assert %Ecto.Changeset{} = Links.change_link(link)
     end
+
+    test "is_taken/2 with id taken" do
+      {:ok, %Link{}} = Links.create_link(@valid_attrs)
+      {:error, changeset} = Links.create_link(@duplicated_id_attrs)
+      assert Links.is_taken?(changeset, :id) == true
+    end
+
+    test "is_taken/2 with url taken" do
+      {:ok, %Link{}} = Links.create_link(@valid_attrs)
+      {:error, changeset} = Links.create_link(@duplicated_url_attrs)
+      assert Links.is_taken?(changeset, :url) == true
+    end
+
+    test "is_url_invalid with empty url" do
+      {:error, changeset} = Links.create_link(@empty_url_attrs)
+      assert Links.is_url_invalid?(changeset) == true
+    end
+
+    test "is_url_invalid with invalid url" do
+      {:error, changeset} = Links.create_link(@invalid_url_attrs)
+      assert Links.is_url_invalid?(changeset) == true
+    end
+
   end
 end
