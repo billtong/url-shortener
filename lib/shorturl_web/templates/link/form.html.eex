@@ -1,0 +1,10 @@
+<%= form_for @changeset, @action, fn f -> %>
+
+<%= label f, :url, "Paste your link below" %>
+<%= url_input f, :url, autofocus: true %>
+<%= error_tag f, :url %>
+
+<div>
+  <%= submit "Create short link" %>
+</div>
+<% end %>
