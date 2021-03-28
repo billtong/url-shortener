@@ -4,9 +4,11 @@ defmodule Shorturl.Links do
   """
 
   import Ecto.Query, warn: false
-  alias Shorturl.Repo
+  alias Shorturl.{Cache, Repo}
   alias Shorturl.Links.Link
   alias Ecto.Changeset
+
+  @cache_server :link_cache_server
 
   @doc """
   Gets a single link.
@@ -15,21 +17,33 @@ defmodule Shorturl.Links do
 
   ## Examples
 
-      iex> get_link!(123)
+      iex> get_link_no_cache!(123)
       %Link{}
 
-      iex> get_link!(456)
+      iex> get_link_no_cache!(456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_link!(id), do: Repo.get!(Link, id)
-
+  def get_link_no_cache!(id), do: Repo.get!(Link, id)
 
   @doc """
   select * by id
   return nil or %Link{}
   """
-  def get_link(id), do: Repo.get(Link, id)
+  def get_link_no_cache(id), do: Repo.get(Link, id)
+
+  def get_link!(id) do
+    case Cache.get(@cache_server, id) do
+      %Link{} = link -> link
+      nil -> get_link_db!(id)
+    end
+  end
+
+  defp get_link_db!(id) do
+    link = Repo.get!(Link, id)
+    Cache.put(@cache_server, id, link)
+    link
+  end
 
   @doc """
   select * by url

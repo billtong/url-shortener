@@ -39,18 +39,24 @@ defmodule Shorturl.LinksTest do
       assert {:error, %Ecto.Changeset{}} = Links.create_link(@duplicated_id_attrs)
     end
 
-    test "get_link!/1 returns the link with given id" do
+    test "get_link!/1 return the link with given id via cache" do
       link = link_fixture()
-      assert Links.get_link!(link.id) == link
+      assert @valid_attrs = Links.get_link!(link.id) # via db
+      assert @valid_attrs = Links.get_link!(link.id) # via cache
     end
 
-    test "get_link/1 return nil" do
-      assert Links.get_link("??") == nil
+    test "get_link_no_cache!/1 returns the link with given id" do
+      link = link_fixture()
+      assert Links.get_link_no_cache!(link.id) == link
     end
 
-    test "get_link/1 return link struct" do
+    test "get_link_no_cache!/1 return nil" do
+      assert Links.get_link_no_cache("??") == nil
+    end
+
+    test "get_link_no_cache!/1 return link struct" do
       link = link_fixture()
-      assert Links.get_link(link.id) == link
+      assert Links.get_link_no_cache(link.id) == link
     end
 
     test "get_link_by_url return nil" do
@@ -75,7 +81,7 @@ defmodule Shorturl.LinksTest do
     test "update_link/2 with invalid data returns error changeset" do
       link = link_fixture()
       assert {:error, %Ecto.Changeset{}} = Links.update_link(link, @invalid_attrs)
-      assert link == Links.get_link!(link.id)
+      assert link == Links.get_link_no_cache!(link.id)
     end
 
     test "change_link/1 returns a link changeset" do

@@ -1,7 +1,6 @@
 use Mix.Config
 
 database_url = System.get_env("DATABASE_URL")
-#database_url = "postgres://postgres:foofoovalve@34.207.111.10:5432/shorturl_dev2"
 
 # Configure your database
 config :shorturl, Shorturl.Repo,

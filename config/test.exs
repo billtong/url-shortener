@@ -7,7 +7,6 @@ use Mix.Config
 # Run `mix help test` for more information.
 config :shorturl, Shorturl.Repo,
   url: System.get_env("DATABASE_URL") |> String.replace("?", "test"),
-  #url: "postgres://postgres:foofoovalve@34.207.111.10:5432/shorturl_dev2",
 
   pool: Ecto.Adapters.SQL.Sandbox
 
