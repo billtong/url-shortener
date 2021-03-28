@@ -17,7 +17,15 @@ defmodule Shorturl.Application do
       ShorturlWeb.Endpoint,
       # Start a worker by calling: Shorturl.Worker.start_link(arg)
       # {Shorturl.Worker, arg}
-      Shorturl.Scheduler
+      Shorturl.Scheduler,
+      # Start Cache server
+      {Shorturl.Cache, [
+        server_name: :link_cache_server,
+        ets_name: :link_cache,
+        ttl: :timer.seconds(60*60*24*3), #cache data save for 3 days
+        ttl_check_interval: :timer.seconds(60* 10), # purge every 10 minutes
+        max_size: 1_000 # the maximum cache data is 1_000
+      ]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
