@@ -19,10 +19,6 @@ defmodule Shorturl.Cache do
     {:ok, state}
   end
 
-  def state(server) do
-    GenServer.call(server, {:state})
-  end
-
   def get(server, key) do
     GenServer.call(server, {:get, key})
   end
@@ -34,12 +30,6 @@ defmodule Shorturl.Cache do
   def put(server, key, value) do
     GenServer.cast(server, {:put, key, value})
   end
-
-  @doc """
-  return the state of the genserver
-  """
-  @impl GenServer
-  def handle_call({:state}, _from, state), do: {:reply, state, state}
 
   @doc """
   look up the ets set, and return the link struct or nil

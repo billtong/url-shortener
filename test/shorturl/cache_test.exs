@@ -25,7 +25,7 @@ defmodule Shorturl.CacheTest do
   end
 
   test "check inital state" do
-    state = Cache.state(@cache_init_args[:server_name])
+    state = :sys.get_state(@cache_init_args[:server_name])
 
     assert state == Enum.into(@cache_init_args, %{})
   end
