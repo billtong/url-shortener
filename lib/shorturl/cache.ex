@@ -62,7 +62,7 @@ defmodule Shorturl.Cache do
     info = :ets.info(ets_name)
     cond do
       info[:size] < max_size -> # limit the maximum cache data size
-        expiration = :os.system_time(:millisecond) + ttl
+        expiration = :erlang.monotonic_time(:millisecond) + ttl
         :ets.insert(ets_name, {key, value, expiration})
       true -> true
     end
@@ -82,7 +82,7 @@ defmodule Shorturl.Cache do
     :ets.tab2list(ets_name)
     |> Enum.each(fn {key, _value, expiration} ->
       cond do
-        expiration < :os.system_time(:millisecond) ->
+        expiration < :erlang.monotonic_time(:millisecond) ->
           :ets.delete(ets_name, key)
         true -> true
       end
