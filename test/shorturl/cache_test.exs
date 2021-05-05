@@ -5,8 +5,8 @@ defmodule Shorturl.CacheTest do
   @cache_init_args [
     server_name: :test_cache_server,
     ets_name: :test_cache_ets,
-    ttl: :timer.seconds(10),
-    ttl_check_interval: :timer.seconds(1),
+    ttl: 100, # the expire time is 100 ms
+    ttl_check_interval: 10, # check every 10 ms
     max_size: 3
   ]
 
