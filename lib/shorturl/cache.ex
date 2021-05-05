@@ -44,6 +44,12 @@ defmodule Shorturl.Cache do
     {:reply, reply, state}
   end
 
+  @impl GenServer
+  def handle_call(_req, _from, state) do
+    IO.puts("Error: No handle_call request matches, catch-all clause is called.")
+    {:reply, nil, state}
+  end
+
   @doc """
   delete the key value pair by key
   """
@@ -69,6 +75,12 @@ defmodule Shorturl.Cache do
     {:noreply, state}
   end
 
+  @impl GenServer
+  def handle_cast(_req, state) do
+    IO.puts("Error: No handle_cast request matches, catch-all clause is called.")
+    {:noreply, state}
+  end
+
   defp schedule_cache_check(ttl_interval) do
     Process.send_after(self(), :check_purge, ttl_interval)
   end
@@ -91,4 +103,9 @@ defmodule Shorturl.Cache do
     {:noreply, state}
   end
 
+  @impl GenServer
+  def handle_info(_req, state) do
+    IO.puts("Error: No handle_info request matches, catch-all clause is called.")
+    {:noreply, state}
+  end
 end

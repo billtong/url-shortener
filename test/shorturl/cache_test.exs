@@ -67,4 +67,16 @@ defmodule Shorturl.CacheTest do
     Process.sleep(@cache_init_args[:ttl] + @cache_init_args[:ttl_check_interval])
     assert Cache.get(@cache_init_args[:server_name], @key_1) == nil
   end
+
+  test "handle_call's catch-all clause" do
+    assert GenServer.call(@cache_init_args[:server_name], :wrong_request) == :nil
+  end
+
+  test "handle_cast's catch-all clause" do
+    assert GenServer.cast(@cache_init_args[:server_name], :wrong_request) == :ok
+  end
+
+  test "handle_info's catch-all" do
+    assert Process.send(@cache_init_args[:server_name], :wrong_request, []) == :ok
+  end
 end
