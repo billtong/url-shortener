@@ -5,7 +5,7 @@ defmodule Shorturl.Links do
   alias Shorturl.Links.Link
   alias Ecto.Changeset
 
-  @cache_server :link_cache_server
+  @cache_server Application.get_env(:shorturl, :link_cache_name)
 
   def get_link_no_cache!(id), do: Repo.get!(Link, id)
 

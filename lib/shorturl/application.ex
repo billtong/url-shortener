@@ -20,7 +20,7 @@ defmodule Shorturl.Application do
       Shorturl.Scheduler,
       # Start Cache server
       {Shorturl.Cache, [
-        server_name: :link_cache_server,
+        server_name: Application.get_env(:shorturl, :link_cache_name),
         ets_name: :link_cache,
         ttl: :timer.seconds(60*60*24*3), #cache data save for 3 days
         ttl_check_interval: :timer.seconds(60* 10), # purge every 10 minutes
