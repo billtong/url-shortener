@@ -9,7 +9,8 @@ use Mix.Config
 
 config :shorturl,
   ecto_repos: [Shorturl.Repo],
-  link_cache_name: :link_cache_server # the name of the link cache genserver
+  link_cache_name: :link_cache_server, # the name of the link cache genserver
+  link_cache_ets: :link_cache # the name of the ets in cache genserver
 
 # Configures the endpoint
 config :shorturl, ShorturlWeb.Endpoint,

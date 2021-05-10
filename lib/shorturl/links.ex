@@ -6,6 +6,7 @@ defmodule Shorturl.Links do
   alias Ecto.Changeset
 
   @cache_server Application.get_env(:shorturl, :link_cache_name)
+  @ets_name Application.get_env(:shorturl, :link_cache_ets)
 
   def get_link_no_cache!(id), do: Repo.get!(Link, id)
 
@@ -20,7 +21,7 @@ defmodule Shorturl.Links do
   it will check cache first. if there is a hit return the link, else do the db with put cache operaiton
   """
   def get_link!(id) do
-    case Cache.get(@cache_server, id) do
+    case Cache.get(@ets_name, id) do
       %Link{} = link -> link
       nil -> get_link_db!(id)
     end

@@ -21,7 +21,7 @@ defmodule Shorturl.Application do
       # Start Cache server
       {Shorturl.Cache, [
         server_name: Application.get_env(:shorturl, :link_cache_name),
-        ets_name: :link_cache,
+        ets_name: Application.get_env(:shorturl, :link_cache_ets),
         ttl: :timer.seconds(60*60*24*3), #cache data save for 3 days
         ttl_check_interval: :timer.seconds(60* 10), # purge every 10 minutes
         max_size: 1_000 # the maximum cache data is 1_000

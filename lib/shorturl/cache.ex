@@ -19,44 +19,25 @@ defmodule Shorturl.Cache do
     {:ok, state}
   end
 
-  def get(server, key) do
-    GenServer.call(server, {:get, key})
-  end
-
-  def delete(server, key) do
-    GenServer.cast(server, {:delete, key})
-  end
-
-  def put(server, key, value) do
-    GenServer.cast(server, {:put, key, value})
-  end
-
   @doc """
   look up the ets set, and return the link struct or nil
   """
-  @impl GenServer
-  def handle_call({:get, key}, _from, %{ets_name: ets_name} = state) do
-    reply =
+  def get(ets_name, key) do
     case :ets.lookup(ets_name, key) do
-      [] -> nil
       [{_key, value, _exp}] -> value
+      [] -> nil
     end
-    {:reply, reply, state}
-  end
-
-  @impl GenServer
-  def handle_call(_req, _from, state) do
-    IO.puts("Error: No handle_call request matches, catch-all clause is called.")
-    {:reply, nil, state}
   end
 
   @doc """
   delete the key value pair by key
   """
-  @impl GenServer
-  def handle_cast({:delete, key}, %{ets_name: ets_name} = state) do
+  def delete(ets_name, key) do
     :ets.delete(ets_name, key)
-    {:noreply, state}
+  end
+
+  def put(server, key, value) do
+    GenServer.call(server, {:put, key, value})
   end
 
   @doc """
@@ -64,7 +45,7 @@ defmodule Shorturl.Cache do
   calculate the expiration and put {key, value, expiration} into the ets
   """
   @impl GenServer
-  def handle_cast({:put, key, value}, %{ets_name: ets_name, ttl: ttl, max_size: max_size} = state) do
+  def handle_call({:put, key, value}, _from, %{ets_name: ets_name, ttl: ttl, max_size: max_size} = state) do
     info = :ets.info(ets_name)
     cond do
       info[:size] < max_size -> # limit the maximum cache data size
@@ -72,7 +53,13 @@ defmodule Shorturl.Cache do
         :ets.insert(ets_name, {key, value, expiration})
       true -> true
     end
-    {:noreply, state}
+    {:reply, :ok, state}
+  end
+
+  @impl GenServer
+  def handle_call(_req, _from, state) do
+    IO.puts("Error: No handle_call request matches, catch-all clause is called.")
+    {:reply, nil, state}
   end
 
   @impl GenServer
