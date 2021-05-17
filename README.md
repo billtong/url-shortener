@@ -10,6 +10,7 @@ To fire up the project:
 ```
 $ docker-compose build
 $ docker-compose run web mix ecto.create
+$ docker-compose run web mix ecto.migrate
 $ docker-compose up
 ```
 
